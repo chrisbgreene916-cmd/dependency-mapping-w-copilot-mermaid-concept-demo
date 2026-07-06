@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dependency Mapping — Portfolio Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #68c7ff;
+    --surface: #7dcfff;
+    --surface2: #92d8ff;
+    --surface3: #a7e0ff;
+    --border: #4db8f5;
+    --border-strong: #35a8ee;
+    --text: #003c6b;
+    --text-muted: #1a5a8a;
+    --text-dim: #2e6e9e;
+    --pink: #f5c8d8;
+    --pink-light: #F8D0DF;
+    --pink-border: #ECA8C0;
+    --green: #3a9e6e;
+    --green-bg: #a8ddc0;
+    --green-border: #68c098;
+    --amber: #b07010;
+    --amber-bg: #f0d888;
+    --amber-border: #c89830;
+    --purple: #7c5cbf;
+    --purple-bg: #d8ccf0;
+    --purple-border: #a890d8;
+    --teams-purple: #6264a7;
+    --teams-purple-bg: #e8e8f5;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Poppins', sans-serif;
+    --radius: 8px;
+    --radius-lg: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+  /* ── Hero ── */
+  .hero { padding: 72px 24px 48px; max-width: 960px; margin: 0 auto; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: #003c6b; background: var(--pink); border: 1px solid var(--pink-border); border-radius: 20px; padding: 4px 12px; margin-bottom: 24px; letter-spacing: .04em; }
+  .hero h1 { font-size: clamp(28px,5vw,48px); font-weight: 600; line-height: 1.15; letter-spacing: -.02em; color: #003c6b; margin-bottom: 16px; }
+  .hero h1 span { color: var(--pink-light); }
+  .hero p { font-size: 16px; color: var(--text-muted); max-width: 600px; line-height: 1.7; margin-bottom: 32px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag { font-size: 12px; font-family: var(--mono); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-strong); color: var(--text-muted); background: var(--surface); }
+
+  /* ── About ── */
+  .about { max-width: 960px; margin: 0 auto; padding: 0 24px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .about-card { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); padding: 24px; }
+  .about-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 12px; color: #003c6b; }
+  .about-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .about-card li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .about-card li i { color: var(--pink-light); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .stack-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-family: var(--mono); padding: 4px 10px; border-radius: var(--radius); border: 1px solid var(--border-strong); color: var(--text-muted); background: var(--surface2); margin: 3px; }
+  .stack-pill i { font-size: 12px; color: var(--pink-light); }
+
+  /* ── Demo ── */
+  .demo-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+  .section-label { font-family: var(--mono); font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+
+  /* ── Controls bar ── */
+  .controls-bar { background: var(--surface2); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .step-pills { display: flex; gap: 6px; }
+  .pill { font-size: 10px; font-family: var(--mono); padding: 3px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-dim); background: transparent; transition: all .3s; }
+  .pill.active { background: var(--pink); color: #003c6b; border-color: var(--pink-border); }
+  .pill.done { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .ctrl-desc { flex: 1; font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 16px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--surface2); color: #003c6b; font-size: 12px; font-family: var(--sans); cursor: pointer; transition: background .15s; }
+  .btn:hover { background: var(--surface3); }
+  .btn:disabled { opacity: .35; cursor: default; pointer-events: none; }
+  .btn-primary { background: var(--pink); border-color: var(--pink-border); color: #003c6b; }
+  .btn-primary:hover { background: #f0b0c8; }
+
+  /* ── Window ── */
+  .window { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; }
+  .window-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+  .win-dots { display: flex; gap: 5px; }
+  .win-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ffb3b3; } .dot-a { background: #ffdda0; } .dot-g { background: #b3e8c8; }
+  .win-title { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: 4px; }
+  .win-badge { margin-left: auto; font-size: 10px; font-family: var(--mono); padding: 2px 8px; border-radius: 20px; background: var(--pink); color: #003c6b; border: 1px solid var(--pink-border); }
+
+  /* ── 3-panel layout ── */
+  .panels { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); min-height: 520px; }
+  .panel { background: var(--surface); display: flex; flex-direction: column; }
+  .panel-head { padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-family: var(--mono); background: var(--surface2); }
+  .panel-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .panel-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+
+  /* ── Teams transcript panel ── */
+  .teams-bar { background: var(--teams-purple); border-radius: var(--radius) var(--radius) 0 0; padding: 6px 10px; display: flex; align-items: center; gap: 6px; margin: -12px -12px 10px; }
+  .teams-bar-title { font-size: 10px; color: rgba(255,255,255,0.9); font-family: var(--mono); }
+  .teams-bar i { color: rgba(255,255,255,0.8); font-size: 13px; }
+  .teams-bar-dot { width: 6px; height: 6px; border-radius: 50%; background: #f0a8a8; margin-left: auto; }
+
+  .transcript-msg { display: flex; gap: 8px; opacity: 0; transform: translateY(4px); transition: opacity .4s ease, transform .4s ease; margin-bottom: 8px; }
+  .transcript-msg.visible { opacity: 1; transform: none; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .msg-body { flex: 1; }
+  .msg-name { font-size: 10px; font-weight: 600; color: #003c6b; margin-bottom: 2px; }
+  .msg-time { font-size: 9px; color: var(--text-dim); margin-left: 5px; font-family: var(--mono); }
+  .msg-text { font-size: 11px; color: var(--text-muted); line-height: 1.4; background: var(--surface2); border-radius: 0 6px 6px 6px; padding: 6px 8px; }
+
+  /* ── SharePoint files ── */
+  .sp-bar { background: #038387; border-radius: var(--radius) var(--radius) 0 0; padding: 6px 10px; display: flex; align-items: center; gap: 6px; margin: -12px -12px 10px; }
+  .sp-bar-title { font-size: 10px; color: rgba(255,255,255,0.9); font-family: var(--mono); }
+  .sp-bar i { color: rgba(255,255,255,0.8); font-size: 13px; }
+  .sp-bar-dot { width: 6px; height: 6px; border-radius: 50%; background: #ffdda0; margin-left: auto; }
+
+  .file-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface2); font-size: 11px; color: #003c6b; opacity: 0; transform: translateX(-6px); transition: opacity .4s ease, transform .4s ease; margin-bottom: 5px; }
+  .file-item.visible { opacity: 1; transform: none; }
+  .file-icon { font-size: 14px; flex-shrink: 0; }
+  .file-name { flex: 1; font-family: var(--mono); font-size: 10px; }
+  .file-badge { font-size: 9px; padding: 1px 6px; border-radius: 20px; font-family: var(--mono); }
+  .fb-doc { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .fb-arch { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .fb-ts { background: var(--teams-purple-bg); color: var(--teams-purple); border: 1px solid #b0b0d0; }
+
+  .gather-arrow { text-align: center; font-size: 18px; color: var(--border-strong); margin: 4px 0; opacity: 0; transition: opacity .4s ease; }
+  .gather-arrow.visible { opacity: 1; }
+
+  /* ── Mermaid code panel ── */
+  .mermaid-bar { background: #1e2333; border-radius: var(--radius) var(--radius) 0 0; padding: 6px 10px; display: flex; align-items: center; gap: 6px; margin: -12px -12px 10px; }
+  .mermaid-bar-title { font-size: 10px; color: rgba(255,255,255,0.7); font-family: var(--mono); }
+  .mermaid-bar i { color: #e879f9; font-size: 13px; }
+  .mermaid-lang { font-size: 9px; font-family: var(--mono); color: #a78bfa; margin-left: auto; background: rgba(167,139,250,0.15); padding: 1px 6px; border-radius: 3px; }
+
+  .code-area { background: #1e2333; border-radius: var(--radius); padding: 10px 12px; flex: 1; font-family: var(--mono); font-size: 10px; line-height: 1.7; color: #c9d1d9; overflow: hidden; min-height: 300px; }
+  .code-line { opacity: 0; white-space: nowrap; }
+  .code-line.visible { opacity: 1; transition: opacity .2s ease; }
+  .c-keyword { color: #ff79c6; }
+  .c-node { color: #50fa7b; }
+  .c-arrow { color: #8be9fd; }
+  .c-label { color: #f1fa8c; }
+  .c-comment { color: #6272a4; }
+  .c-bracket { color: #ffb86c; }
+
+  /* ── Diagram render panel ── */
+  .diagram-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-dim); font-size: 12px; font-family: var(--mono); }
+  .diagram-placeholder i { font-size: 32px; }
+
+  .diagram-render { display: none; flex: 1; opacity: 0; transition: opacity .6s ease; }
+  .diagram-render.visible { display: flex; opacity: 1; flex-direction: column; }
+
+  /* ── SVG graph ── */
+  .graph-svg { flex: 1; width: 100%; }
+  .node-circle { transition: opacity .5s ease, transform .5s ease; opacity: 0; }
+  .node-circle.visible { opacity: 1; }
+  .node-label { transition: opacity .5s ease; opacity: 0; font-family: var(--mono); font-size: 9px; }
+  .node-label.visible { opacity: 1; }
+  .edge-path { stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 1s ease; }
+  .edge-path.visible { stroke-dashoffset: 0; }
+  .edge-label { opacity: 0; transition: opacity .5s ease; font-family: var(--mono); font-size: 8px; fill: #003c6b; }
+  .edge-label.visible { opacity: 1; }
+
+  footer { max-width: 1100px; margin: 0 auto; border-top: 1px solid var(--border); padding: 20px 24px; text-align: center; font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
+
+  @media (max-width: 820px) {
+    .panels { grid-template-columns: 1fr; }
+    .about { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .transcript-msg, .file-item, .gather-arrow, .code-line, .diagram-render, .node-circle, .node-label, .edge-path, .edge-label { transition: none; animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="eyebrow"><i class="ti ti-arrows-split-2"></i> Portfolio project</div>
+  <h1>Dependency mapping<br><span>via Copilot + Mermaid</span></h1>
+  <p>A single Copilot prompt reads a SharePoint library of technical docs and a Teams meeting transcript, then generates Mermaid graph syntax that renders a live system dependency map — turning scattered documentation into an always-current architecture diagram.</p>
+  <div class="hero-tags">
+    <span class="tag"><i class="ti ti-brand-teams"></i> Teams transcript</span>
+    <span class="tag">SharePoint library</span>
+    <span class="tag">GitHub Copilot</span>
+    <span class="tag">Mermaid.js</span>
+    <span class="tag">System dependencies</span>
+    <span class="tag">Auto-generated diagram</span>
+  </div>
+</section>
+
+<section class="about">
+  <div class="about-card">
+    <h3>How it works</h3>
+    <ul>
+      <li><i class="ti ti-arrow-right"></i> Copilot is prompted to read a SharePoint library containing architecture docs, API specs, and integration runbooks</li>
+      <li><i class="ti ti-arrow-right"></i> It also ingests the latest architecture review meeting transcript from Teams to capture any verbal decisions not yet in docs</li>
+      <li><i class="ti ti-arrow-right"></i> A single prompt asks Copilot to return valid Mermaid graph syntax describing the system dependencies it found</li>
+      <li><i class="ti ti-arrow-right"></i> The generated code is dropped into the Mermaid live editor — the diagram renders instantly, ready to share or embed</li>
+    </ul>
+  </div>
+  <div class="about-card">
+    <h3>Why this matters</h3>
+    <ul>
+      <li><i class="ti ti-arrow-right"></i> Auto-generated dependency maps become living technical documentation — fed directly into onboarding packs, runbooks, and requirements docs without anyone manually drawing a diagram</li>
+      <li><i class="ti ti-arrow-right"></i> New engineers and business analysts can understand how systems connect in minutes rather than spending weeks extracting that knowledge from the people who built them</li>
+      <li><i class="ti ti-arrow-right"></i> Requirements gathering accelerates when teams can see what a change touches before the conversation even starts — reducing the back-and-forth caused by undiscovered dependencies</li>
+      <li><i class="ti ti-arrow-right"></i> Tribal knowledge locked in meeting transcripts and engineers' heads gets surfaced and codified automatically — so the organisation retains it even when people move on</li>
+    </ul>
+    <div style="margin-top:16px">
+      <span class="stack-pill"><i class="ti ti-brand-teams"></i>MS Teams</span>
+      <span class="stack-pill"><i class="ti ti-files"></i>SharePoint</span>
+      <span class="stack-pill"><i class="ti ti-brand-github"></i>Copilot</span>
+      <span class="stack-pill"><i class="ti ti-chart-dots-3"></i>Mermaid.js</span>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section">
+  <div class="section-label">// interactive demo — click "run demo" to watch sources become a diagram</div>
+
+  <div class="controls-bar">
+    <div class="step-pills" id="pills">
+      <div class="pill active" id="p0">1. gather sources</div>
+      <div class="pill" id="p1">2. generate code</div>
+      <div class="pill" id="p2">3. render diagram</div>
+    </div>
+    <span class="ctrl-desc" id="stepDesc">click "run demo" to begin</span>
+    <button class="btn" id="resetBtn" onclick="resetDemo()"><i class="ti ti-refresh" style="font-size:13px"></i> Restart</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="runDemo()"><i class="ti ti-player-play" style="font-size:13px"></i> Run demo</button>
+  </div>
+
+  <div class="window">
+    <div class="window-bar">
+      <div class="win-dots"><div class="win-dot dot-r"></div><div class="win-dot dot-a"></div><div class="win-dot dot-g"></div></div>
+      <span class="win-title">copilot — dependency mapping · system architecture</span>
+      <span class="win-badge">live simulation</span>
+    </div>
+
+    <div class="panels">
+
+      <!-- Panel 1: Sources (Teams + SharePoint stacked) -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-dot" style="background:var(--pink-light)"></div>
+          Source context
+        </div>
+        <div class="panel-body">
+
+          <!-- Teams transcript -->
+          <div class="teams-bar">
+            <i class="ti ti-brand-teams"></i>
+            <span class="teams-bar-title">Arch review · 04 Jun 2025 · transcript</span>
+            <div class="teams-bar-dot"></div>
+          </div>
+
+          <div id="t1" class="transcript-msg">
+            <div class="avatar" style="background:#6264a7">SL</div>
+            <div class="msg-body">
+              <div class="msg-name">Sara Lee <span class="msg-time">09:04</span></div>
+              <div class="msg-text">The API gateway is now the single entry point — Auth service calls go through it before hitting any downstream service.</div>
+            </div>
+          </div>
+          <div id="t2" class="transcript-msg">
+            <div class="avatar" style="background:#038387">MK</div>
+            <div class="msg-body">
+              <div class="msg-name">Marcus K <span class="msg-time">09:07</span></div>
+              <div class="msg-text">Confirmed — Notification service has a hard dependency on User Profile. If profile is down, push fails silently.</div>
+            </div>
+          </div>
+          <div id="t3" class="transcript-msg">
+            <div class="avatar" style="background:#ca5010">RP</div>
+            <div class="msg-body">
+              <div class="msg-name">Riya P <span class="msg-time">09:12</span></div>
+              <div class="msg-text">Reporting pulls from the Data Warehouse — not directly from the operational DB anymore. That change landed last sprint.</div>
+            </div>
+          </div>
+
+          <!-- gather arrow -->
+          <div class="gather-arrow" id="gather-arrow">⬇ ingested by Copilot</div>
+
+          <!-- SharePoint files -->
+          <div class="sp-bar">
+            <i class="ti ti-brand-sharepoint"></i>
+            <span class="sp-bar-title">SharePoint · /Architecture · 6 files</span>
+            <div class="sp-bar-dot"></div>
+          </div>
+
+          <div id="f1" class="file-item">
+            <i class="ti ti-file-description file-icon" style="color:#7c5cbf"></i>
+            <span class="file-name">system-overview.docx</span>
+            <span class="file-badge fb-doc">arch doc</span>
+          </div>
+          <div id="f2" class="file-item">
+            <i class="ti ti-file-code file-icon" style="color:#038387"></i>
+            <span class="file-name">api-gateway-spec.md</span>
+            <span class="file-badge fb-arch">API spec</span>
+          </div>
+          <div id="f3" class="file-item">
+            <i class="ti ti-file-description file-icon" style="color:#7c5cbf"></i>
+            <span class="file-name">integration-runbook.docx</span>
+            <span class="file-badge fb-doc">runbook</span>
+          </div>
+          <div id="f4" class="file-item">
+            <i class="ti ti-brand-teams file-icon" style="color:#6264a7"></i>
+            <span class="file-name">arch-review-04jun.vtt</span>
+            <span class="file-badge fb-ts">transcript</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Panel 2: Mermaid code -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-dot" style="background:#e879f9"></div>
+          Copilot output — Mermaid syntax
+        </div>
+        <div class="panel-body" style="padding:0;gap:0">
+          <div class="mermaid-bar">
+            <i class="ti ti-code"></i>
+            <span class="mermaid-bar-title">generated · dependency-map.mmd</span>
+            <span class="mermaid-lang">mermaid</span>
+          </div>
+          <div class="code-area" id="code-area">
+            <div class="code-line" id="cl0"><span class="c-comment">%%  System dependency map</span></div>
+            <div class="code-line" id="cl1"><span class="c-comment">%%  Generated by Copilot · 04 Jun 2025</span></div>
+            <div class="code-line" id="cl2">&nbsp;</div>
+            <div class="code-line" id="cl3"><span class="c-keyword">graph</span> <span class="c-node">TD</span></div>
+            <div class="code-line" id="cl4">&nbsp;</div>
+            <div class="code-line" id="cl5"><span class="c-comment">  %% Entry point</span></div>
+            <div class="code-line" id="cl6">  <span class="c-node">Client</span><span class="c-bracket">["</span><span class="c-label">Client App</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl7">  <span class="c-node">GW</span><span class="c-bracket">["</span><span class="c-label">API Gateway</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl8">&nbsp;</div>
+            <div class="code-line" id="cl9"><span class="c-comment">  %% Core services</span></div>
+            <div class="code-line" id="cl10">  <span class="c-node">Auth</span><span class="c-bracket">["</span><span class="c-label">Auth Service</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl11">  <span class="c-node">UP</span><span class="c-bracket">["</span><span class="c-label">User Profile</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl12">  <span class="c-node">Notif</span><span class="c-bracket">["</span><span class="c-label">Notification Svc</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl13">  <span class="c-node">Report</span><span class="c-bracket">["</span><span class="c-label">Reporting</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl14">  <span class="c-node">DW</span><span class="c-bracket">["</span><span class="c-label">Data Warehouse</span><span class="c-bracket">"]</span></div>
+            <div class="code-line" id="cl15">&nbsp;</div>
+            <div class="code-line" id="cl16"><span class="c-comment">  %% Dependencies</span></div>
+            <div class="code-line" id="cl17">  <span class="c-node">Client</span> <span class="c-arrow">--&gt;</span> <span class="c-node">GW</span></div>
+            <div class="code-line" id="cl18">  <span class="c-node">GW</span> <span class="c-arrow">--&gt;</span> <span class="c-node">Auth</span></div>
+            <div class="code-line" id="cl19">  <span class="c-node">GW</span> <span class="c-arrow">--&gt;</span> <span class="c-node">UP</span></div>
+            <div class="code-line" id="cl20">  <span class="c-node">GW</span> <span class="c-arrow">--&gt;</span> <span class="c-node">Notif</span></div>
+            <div class="code-line" id="cl21">  <span class="c-node">GW</span> <span class="c-arrow">--&gt;</span> <span class="c-node">Report</span></div>
+            <div class="code-line" id="cl22">  <span class="c-node">Notif</span> <span class="c-arrow">--&gt;|</span><span class="c-label">hard dep</span><span class="c-arrow">|</span> <span class="c-node">UP</span></div>
+            <div class="code-line" id="cl23">  <span class="c-node">Report</span> <span class="c-arrow">--&gt;</span> <span class="c-node">DW</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Rendered diagram -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-dot" style="background:var(--green)"></div>
+          Mermaid — rendered diagram
+        </div>
+        <div class="panel-body">
+          <div class="diagram-placeholder" id="diagram-placeholder">
+            <i class="ti ti-chart-dots-3"></i>
+            <span>Diagram renders here</span>
+          </div>
+          <div class="diagram-render" id="diagram-render">
+            <svg class="graph-svg" viewBox="0 0 340 460" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                  <polygon points="0 0, 8 3, 0 6" fill="#35a8ee"/>
+                </marker>
+                <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                  <polygon points="0 0, 8 3, 0 6" fill="#c85858"/>
+                </marker>
+              </defs>
+
+              <!-- Edges (drawn under nodes) -->
+              <!-- Client → GW -->
+              <path id="e-client-gw" class="edge-path" d="M 170 54 L 170 94" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+              <!-- GW → Auth -->
+              <path id="e-gw-auth" class="edge-path" d="M 148 134 L 68 184" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+              <!-- GW → UP -->
+              <path id="e-gw-up" class="edge-path" d="M 162 134 L 128 184" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+              <!-- GW → Notif -->
+              <path id="e-gw-notif" class="edge-path" d="M 178 134 L 212 184" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+              <!-- GW → Report -->
+              <path id="e-gw-report" class="edge-path" d="M 192 134 L 272 184" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+              <!-- Notif → UP (hard dep) -->
+              <path id="e-notif-up" class="edge-path" d="M 196 214 L 144 214" stroke="#c85858" stroke-width="1.5" fill="none" stroke-dasharray="4 2" marker-end="url(#arrowhead-red)"/>
+              <!-- Report → DW -->
+              <path id="e-report-dw" class="edge-path" d="M 272 234 L 272 314" stroke="#35a8ee" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"/>
+
+              <!-- Edge labels -->
+              <text id="el-harddep" class="edge-label" x="150" y="210">hard dep</text>
+
+              <!-- Nodes -->
+              <!-- Client -->
+              <g id="n-client" class="node-circle">
+                <rect x="120" y="20" width="100" height="32" rx="6" fill="#92d8ff" stroke="#35a8ee" stroke-width="1.5"/>
+                <text class="node-label visible" x="170" y="41" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">Client App</text>
+              </g>
+
+              <!-- API Gateway -->
+              <g id="n-gw" class="node-circle">
+                <rect x="105" y="100" width="130" height="32" rx="6" fill="#f5c8d8" stroke="#ECA8C0" stroke-width="1.5"/>
+                <text class="node-label visible" x="170" y="121" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">API Gateway</text>
+              </g>
+
+              <!-- Auth -->
+              <g id="n-auth" class="node-circle">
+                <rect x="20" y="180" width="90" height="32" rx="6" fill="#a8ddc0" stroke="#68c098" stroke-width="1.5"/>
+                <text class="node-label visible" x="65" y="201" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">Auth Service</text>
+              </g>
+
+              <!-- User Profile -->
+              <g id="n-up" class="node-circle">
+                <rect x="95" y="180" width="90" height="32" rx="6" fill="#a8ddc0" stroke="#68c098" stroke-width="1.5"/>
+                <text class="node-label visible" x="140" y="201" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">User Profile</text>
+              </g>
+
+              <!-- Notification -->
+              <g id="n-notif" class="node-circle">
+                <rect x="168" y="180" width="110" height="32" rx="6" fill="#f0d888" stroke="#c89830" stroke-width="1.5"/>
+                <text class="node-label visible" x="223" y="201" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">Notification Svc</text>
+              </g>
+
+              <!-- Reporting -->
+              <g id="n-report" class="node-circle">
+                <rect x="228" y="180" width="90" height="32" rx="6" fill="#d8ccf0" stroke="#a890d8" stroke-width="1.5"/>
+                <text class="node-label visible" x="273" y="201" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">Reporting</text>
+              </g>
+
+              <!-- Data Warehouse -->
+              <g id="n-dw" class="node-circle">
+                <rect x="225" y="320" width="100" height="32" rx="6" fill="#d8ccf0" stroke="#a890d8" stroke-width="1.5"/>
+                <text class="node-label visible" x="275" y="341" text-anchor="middle" fill="#003c6b" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="500">Data Warehouse</text>
+              </g>
+
+              <!-- Legend -->
+              <g id="legend" style="opacity:0;transition:opacity .5s ease">
+                <rect x="10" y="390" width="200" height="60" rx="6" fill="rgba(146,216,255,0.5)" stroke="#4db8f5" stroke-width="1"/>
+                <line x1="20" y1="408" x2="50" y2="408" stroke="#35a8ee" stroke-width="1.5"/>
+                <text x="56" y="412" font-size="9" fill="#003c6b" font-family="'JetBrains Mono',monospace">direct dependency</text>
+                <line x1="20" y1="428" x2="50" y2="428" stroke="#c85858" stroke-width="1.5" stroke-dasharray="4 2"/>
+                <text x="56" y="432" font-size="9" fill="#003c6b" font-family="'JetBrains Mono',monospace">hard dependency</text>
+                <text x="20" y="444" font-size="8" fill="#2e6e9e" font-family="'JetBrains Mono',monospace">source: SharePoint + Teams transcript</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>built with GitHub Copilot · Mermaid.js · Teams + SharePoint · portfolio demo</footer>
+
+<script>
+let running = false;
+
+function setPills(active) {
+  for (let i = 0; i < 3; i++) {
+    const p = document.getElementById('p' + i);
+    p.classList.remove('active', 'done');
+    if (i < active) p.classList.add('done');
+    else if (i === active) p.classList.add('active');
+  }
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Step 1: Gather sources ──
+async function gatherSources() {
+  setPills(0);
+  document.getElementById('stepDesc').textContent = 'ingesting Teams transcript and SharePoint files...';
+
+  // Transcript messages appear
+  for (const id of ['t1','t2','t3']) {
+    document.getElementById(id).classList.add('visible');
+    await wait(900);
+  }
+
+  await wait(400);
+  document.getElementById('gather-arrow').classList.add('visible');
+  await wait(600);
+
+  // Files appear
+  for (const id of ['f1','f2','f3','f4']) {
+    document.getElementById(id).classList.add('visible');
+    await wait(500);
+  }
+
+  await wait(800);
+}
+
+// ── Step 2: Generate Mermaid code ──
+async function generateCode() {
+  setPills(1);
+  document.getElementById('stepDesc').textContent = 'Copilot generating Mermaid dependency syntax...';
+
+  const lineCount = 24;
+  for (let i = 0; i < lineCount; i++) {
+    const el = document.getElementById('cl' + i);
+    if (el) {
+      el.classList.add('visible');
+      await wait(110);
+    }
+  }
+
+  await wait(600);
+}
+
+// ── Step 3: Render diagram ──
+async function renderDiagram() {
+  setPills(2);
+  document.getElementById('stepDesc').textContent = 'rendering dependency graph...';
+
+  document.getElementById('diagram-placeholder').style.display = 'none';
+  const dr = document.getElementById('diagram-render');
+  dr.style.display = 'flex';
+  await wait(100);
+  dr.classList.add('visible');
+
+  // Animate nodes in order: Client → GW → services → DW
+  const nodeOrder = ['n-client','n-gw','n-auth','n-up','n-notif','n-report','n-dw'];
+  for (const id of nodeOrder) {
+    document.getElementById(id).classList.add('visible');
+    await wait(300);
+  }
+
+  await wait(200);
+
+  // Animate edges
+  const edges = ['e-client-gw','e-gw-auth','e-gw-up','e-gw-notif','e-gw-report','e-notif-up','e-report-dw'];
+  for (const id of edges) {
+    document.getElementById(id).classList.add('visible');
+    await wait(250);
+  }
+
+  // Edge label + legend
+  await wait(300);
+  document.getElementById('el-harddep').classList.add('visible');
+  await wait(400);
+  document.getElementById('legend').style.opacity = '1';
+}
+
+async function runDemo() {
+  if (running) return;
+  running = true;
+  document.getElementById('nextBtn').disabled = true;
+
+  await gatherSources();
+  await generateCode();
+  await renderDiagram();
+
+  document.getElementById('nextBtn').innerHTML = '<i class="ti ti-check" style="font-size:13px"></i> Demo complete';
+  document.getElementById('stepDesc').textContent = 'dependency map generated from live documentation sources';
+  setPills(3);
+}
+
+function resetDemo() {
+  running = false;
+
+  // Reset transcript
+  ['t1','t2','t3'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  document.getElementById('gather-arrow').classList.remove('visible');
+  ['f1','f2','f3','f4'].forEach(id => document.getElementById(id).classList.remove('visible'));
+
+  // Reset code
+  for (let i = 0; i < 24; i++) {
+    const el = document.getElementById('cl' + i);
+    if (el) el.classList.remove('visible');
+  }
+
+  // Reset diagram
+  document.getElementById('diagram-placeholder').style.display = 'flex';
+  const dr = document.getElementById('diagram-render');
+  dr.style.display = 'none';
+  dr.classList.remove('visible');
+  ['n-client','n-gw','n-auth','n-up','n-notif','n-report','n-dw'].forEach(id => {
+    document.getElementById(id).classList.remove('visible');
+  });
+  ['e-client-gw','e-gw-auth','e-gw-up','e-gw-notif','e-gw-report','e-notif-up','e-report-dw'].forEach(id => {
+    document.getElementById(id).classList.remove('visible');
+  });
+  document.getElementById('el-harddep').classList.remove('visible');
+  document.getElementById('legend').style.opacity = '0';
+
+  // Reset controls
+  setPills(0);
+  const btn = document.getElementById('nextBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-player-play" style="font-size:13px"></i> Run demo';
+  document.getElementById('stepDesc').textContent = 'click "run demo" to begin';
+}
+</script>
+</body>
+</html>
